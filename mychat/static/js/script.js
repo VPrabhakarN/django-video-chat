@@ -72,8 +72,18 @@ let handleUserLeft = async(user) => {
     }
 }
 
+let leaveAndRemoveLocalStream = async () => {
+    for (let i = 0; localTracks.length > i; i++) {
+        localTracks[i].stop()
+        localTracks[i].close()
+    }
 
+    await client.leave()
+    window.open('/', '_self')
+}
 
 joinAndDisplayLocalSream()
+
+document.getElementById('leave-btn').addEventListener('click', leaveAndRemoveLocalStream)
 
 
