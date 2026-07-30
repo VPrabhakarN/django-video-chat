@@ -3,6 +3,8 @@ const CHANNEL = sessionStorage.getItem('room')
 const TOKEN = sessionStorage.getItem('token')
 let UID = Number(sessionStorage.getItem('UID'))
 
+let NAME = sessionStorage.getItem('name')
+
 const client = AgoraRTC.createClient({mode : 'rtc', codec : 'vp8'})
 
 let localTracks = []
@@ -24,9 +26,11 @@ let joinAndDisplayLocalSream = async () => {
 
     localTracks = await AgoraRTC.createMicrophoneAndCameraTracks()
 
+    let member = await createMember()
+
     let player = `  <div class="video-container" id="user-container-${UID}">
                       <div class="username-wrapper">
-                       <span class="user-name">My Name </span>
+                       <span class="user-name">${member.name}</span>
                       </div>
                       <div class="video-player" id="user-${UID}"></div>
                     </div>`
@@ -52,10 +56,13 @@ let handleUserJoined = async(user, mediaType) => {
         player.remove()
     }
 
+    let member = await getMember(user)
+
+
     player = `
     <div class="video-container" id="user-container-${user.uid}">
         <div class="username-wrapper">
-            <span class="user-name">My Name</span>
+            <span class="user-name">${member.name}</span>
         </div>
         <div class="video-player" id="user-${user.uid}"></div>
     </div>
@@ -109,6 +116,26 @@ let toggleMic = async (e) => {
         await localTracks[0].setMuted(true)
         e.target.style.backgroundColor = 'rgb(255, 80, 80, 1)'
     }
+}
+
+let createMember = async () => {
+    let response = await fetch('/create_member/', {
+        method : 'POST',
+        headers : {
+            'Content-Type' : 'aaplication/json'
+        },
+        body:JSON.stringify({'name' : NAME, 'room_name' : CHANNEL, 'UID' : UID})
+    })
+
+    let member = await response.json()
+    return member
+}
+
+let getMember = async () => {
+    let response = await fetch(`/get_member/?UID=${user.uid}&room_name=${CHANNEL}`)
+    let member = await response.json()
+
+    return member 
 }
 
 joinAndDisplayLocalSream()
