@@ -7,5 +7,5 @@ urlpatterns = [
     path('get_token/', views.get_token, name="gettoken"),
     path('create_member/', views.create_member, name="createmember"),
     path('get_member/', views.get_member, name="getmember"),
-    
+    path('delete_member/', views.delete_member, name="deletemember"),
 ]

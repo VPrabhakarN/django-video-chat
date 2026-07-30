@@ -95,6 +95,7 @@ let leaveAndRemoveLocalStream = async () => {
     }
 
     await client.leave()
+    deleteMember()
     window.open('/', '_self')
 }
 
@@ -122,7 +123,7 @@ let createMember = async () => {
     let response = await fetch('/create_member/', {
         method : 'POST',
         headers : {
-            'Content-Type' : 'aaplication/json'
+            'Content-Type' : 'application/json'
         },
         body:JSON.stringify({'name' : NAME, 'room_name' : CHANNEL, 'UID' : UID})
     })
@@ -131,14 +132,28 @@ let createMember = async () => {
     return member
 }
 
-let getMember = async () => {
+let getMember = async (user) => {
     let response = await fetch(`/get_member/?UID=${user.uid}&room_name=${CHANNEL}`)
     let member = await response.json()
 
     return member 
 }
 
+let deleteMember = async () => {
+    let response = await fetch('/delete_member/', {
+        method : 'POST',
+        headers : {
+            'Content-Type' : 'application/json'
+        },
+        body:JSON.stringify({'name' : NAME, 'room_name' : CHANNEL, 'UID' : UID})
+    })
+
+    let member = await response.json()
+}
+
 joinAndDisplayLocalSream()
+
+window.addEventListener('beforeunload', deleteMember)
 
 document.getElementById('leave-btn').addEventListener('click', leaveAndRemoveLocalStream)
 document.getElementById('camera-btn').addEventListener('click', toggleCamera)
